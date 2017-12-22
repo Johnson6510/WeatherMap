@@ -5,6 +5,7 @@
 //  Created by 黃健偉 on 2017/12/20.
 //  Copyright © 2017年 黃健偉. All rights reserved.
 //  http://media.bemyapp.com/integrate-alamofire-swift/
+//  https://www.thorntech.com/2016/01/how-to-search-for-location-using-apples-mapkit/
 //
 
 import UIKit
@@ -14,6 +15,8 @@ import Alamofire
 class ViewController: UIViewController, MKMapViewDelegate {
 
     let locationManager = CLLocationManager()
+
+    var resultSearchController:UISearchController? = nil
     
     @IBOutlet weak var mapView: MKMapView!
     
@@ -30,6 +33,23 @@ class ViewController: UIViewController, MKMapViewDelegate {
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.requestLocation()
+        
+        let locationSearchTable = storyboard!.instantiateViewController(withIdentifier: "LocationSearchTable") as! LocationSearchTable
+        resultSearchController = UISearchController(searchResultsController: locationSearchTable)
+        resultSearchController?.searchResultsUpdater = locationSearchTable as UISearchResultsUpdating
+        
+        let searchBar = resultSearchController!.searchBar
+        searchBar.sizeToFit()
+        searchBar.placeholder = "Search for places"
+        //navigationItem.titleView = resultSearchController?.searchBar
+        navigationItem.searchController = resultSearchController
+        
+
+        resultSearchController?.hidesNavigationBarDuringPresentation = false
+        resultSearchController?.dimsBackgroundDuringPresentation = true
+        definesPresentationContext = true
+        
+        locationSearchTable.mapView = mapView
     }
 
     override func didReceiveMemoryWarning() {

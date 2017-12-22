@@ -13,6 +13,7 @@
 		BDEC0BD61FEA958D00E0DD95 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BDEC0BD41FEA958D00E0DD95 /* Main.storyboard */; };
 		BDEC0BD81FEA958D00E0DD95 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BDEC0BD71FEA958D00E0DD95 /* Assets.xcassets */; };
 		BDEC0BDB1FEA958D00E0DD95 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BDEC0BD91FEA958D00E0DD95 /* LaunchScreen.storyboard */; };
+		BDFFAF501FECFCAD00E6B10F /* LocationSearchTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFFAF4F1FECFCAD00E6B10F /* LocationSearchTable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 		BDEC0BDA1FEA958D00E0DD95 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BDEC0BDC1FEA958D00E0DD95 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDEC0BE21FEA999F00E0DD95 /* Pods */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Pods; sourceTree = "<group>"; };
+		BDFFAF4F1FECFCAD00E6B10F /* LocationSearchTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSearchTable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +85,7 @@
 				BDEC0BD01FEA958D00E0DD95 /* AppDelegate.swift */,
 				BDEC0BD21FEA958D00E0DD95 /* ViewController.swift */,
 				BDEC0BD41FEA958D00E0DD95 /* Main.storyboard */,
+				BDFFAF4F1FECFCAD00E6B10F /* LocationSearchTable.swift */,
 				BDEC0BD71FEA958D00E0DD95 /* Assets.xcassets */,
 				BDEC0BD91FEA958D00E0DD95 /* LaunchScreen.storyboard */,
 				BDEC0BDC1FEA958D00E0DD95 /* Info.plist */,
@@ -224,6 +227,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDFFAF501FECFCAD00E6B10F /* LocationSearchTable.swift in Sources */,
 				BDEC0BD31FEA958D00E0DD95 /* ViewController.swift in Sources */,
 				BDEC0BD11FEA958D00E0DD95 /* AppDelegate.swift in Sources */,
 			);
