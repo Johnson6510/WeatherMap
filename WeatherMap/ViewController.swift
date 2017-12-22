@@ -12,11 +12,17 @@ import UIKit
 import MapKit
 import Alamofire
 
+protocol HandleMapSearch {
+    func dropPinZoomIn(placemark: MKPlacemark)
+}
+
 class ViewController: UIViewController, MKMapViewDelegate {
 
     let locationManager = CLLocationManager()
 
     var resultSearchController:UISearchController? = nil
+    
+    var selectedPin: MKPlacemark? = nil
     
     @IBOutlet weak var mapView: MKMapView!
     
@@ -50,6 +56,8 @@ class ViewController: UIViewController, MKMapViewDelegate {
         definesPresentationContext = true
         
         locationSearchTable.mapView = mapView
+        
+        locationSearchTable.handleMapSearchDelegate = self
     }
 
     override func didReceiveMemoryWarning() {
@@ -110,26 +118,13 @@ class ViewController: UIViewController, MKMapViewDelegate {
         var imageName: String!
     }
 
-    func mapView(_ MapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        
-        if !(annotation is CustomPointAnnotation) {
-            return nil
+    
+    @objc func getDirections(){
+        if let selectedPin = selectedPin {
+            let mapItem = MKMapItem(placemark: selectedPin)
+            let launchOptions = [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeDriving]
+            mapItem.openInMaps(launchOptions: launchOptions)
         }
-        
-        let reuseId = "test"
-        
-        var anView = MapView.dequeueReusableAnnotationView(withIdentifier: reuseId)
-        if anView == nil {
-            anView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-            anView?.canShowCallout = true
-        } else {
-            anView?.annotation = annotation
-        }
-        
-        let cpa = annotation as! CustomPointAnnotation
-        anView?.image = UIImage(named:cpa.imageName)
-        
-        return anView
     }
 }
 
@@ -152,3 +147,63 @@ extension ViewController : CLLocationManagerDelegate {
         print("error:: \(error)")
     }
 }
+
+extension ViewController: HandleMapSearch {
+    func dropPinZoomIn(placemark: MKPlacemark){
+        // cache the pin
+        selectedPin = placemark
+        // clear existing pins
+        mapView.removeAnnotations(mapView.annotations)
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = placemark.coordinate
+        annotation.title = placemark.name
+        if let city = placemark.locality,
+            let state = placemark.administrativeArea {
+            annotation.subtitle = "\(city) \(state)"
+        }
+        mapView.addAnnotation(annotation)
+        let span = MKCoordinateSpanMake(0.05, 0.05)
+        let region = MKCoordinateRegionMake(placemark.coordinate, span)
+        mapView.setRegion(region, animated: true)
+    }
+}
+
+extension ViewController {
+    func mapView(_ MapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation is MKUserLocation {
+            //return nil so map view draws "blue dot" for standard user location
+            return nil
+        } else if (annotation is CustomPointAnnotation) {
+            let reuseId = "test"
+            var anView = MapView.dequeueReusableAnnotationView(withIdentifier: reuseId)
+            if anView == nil {
+                anView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+                anView?.canShowCallout = true
+            } else {
+                anView?.annotation = annotation
+            }
+            let cpa = annotation as! CustomPointAnnotation
+            anView?.image = UIImage(named:cpa.imageName)
+            
+            return anView
+        } else {
+            let reuseId = "pin"
+            var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
+            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+            pinView?.pinTintColor = UIColor.orange
+            pinView?.canShowCallout = true
+            let smallSquare = CGSize(width: 30, height: 30)
+            let button = UIButton(frame: CGRect(origin: CGPoint(x: 0,y :0), size: smallSquare))
+            button.setBackgroundImage(UIImage(named: "car"), for: .normal)
+            button.addTarget(self, action: #selector(ViewController.getDirections), for: .touchUpInside)
+            pinView?.leftCalloutAccessoryView = button
+
+            return pinView
+        }
+    }
+}
+
+
+
+
+
