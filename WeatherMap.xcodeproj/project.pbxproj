@@ -13,6 +13,7 @@
 		BDEC0BD61FEA958D00E0DD95 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BDEC0BD41FEA958D00E0DD95 /* Main.storyboard */; };
 		BDEC0BD81FEA958D00E0DD95 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BDEC0BD71FEA958D00E0DD95 /* Assets.xcassets */; };
 		BDEC0BDB1FEA958D00E0DD95 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BDEC0BD91FEA958D00E0DD95 /* LaunchScreen.storyboard */; };
+		BDFD03EE1FF7E1C7007F6D9F /* WeatherMap.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BDFD03EC1FF7E1C7007F6D9F /* WeatherMap.xcdatamodeld */; };
 		BDFFAF501FECFCAD00E6B10F /* LocationSearchTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFFAF4F1FECFCAD00E6B10F /* LocationSearchTable.swift */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +29,7 @@
 		BDEC0BDA1FEA958D00E0DD95 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BDEC0BDC1FEA958D00E0DD95 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDEC0BE21FEA999F00E0DD95 /* Pods */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Pods; sourceTree = "<group>"; };
+		BDFD03ED1FF7E1C7007F6D9F /* WeatherMap.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WeatherMap.xcdatamodel; sourceTree = "<group>"; };
 		BDFFAF4F1FECFCAD00E6B10F /* LocationSearchTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSearchTable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -86,6 +88,7 @@
 				BDEC0BD21FEA958D00E0DD95 /* ViewController.swift */,
 				BDEC0BD41FEA958D00E0DD95 /* Main.storyboard */,
 				BDFFAF4F1FECFCAD00E6B10F /* LocationSearchTable.swift */,
+				BDFD03EC1FF7E1C7007F6D9F /* WeatherMap.xcdatamodeld */,
 				BDEC0BD71FEA958D00E0DD95 /* Assets.xcassets */,
 				BDEC0BD91FEA958D00E0DD95 /* LaunchScreen.storyboard */,
 				BDEC0BDC1FEA958D00E0DD95 /* Info.plist */,
@@ -228,6 +231,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BDFFAF501FECFCAD00E6B10F /* LocationSearchTable.swift in Sources */,
+				BDFD03EE1FF7E1C7007F6D9F /* WeatherMap.xcdatamodeld in Sources */,
 				BDEC0BD31FEA958D00E0DD95 /* ViewController.swift in Sources */,
 				BDEC0BD11FEA958D00E0DD95 /* AppDelegate.swift in Sources */,
 			);
@@ -416,6 +420,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		BDFD03EC1FF7E1C7007F6D9F /* WeatherMap.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				BDFD03ED1FF7E1C7007F6D9F /* WeatherMap.xcdatamodel */,
+			);
+			currentVersion = BDFD03ED1FF7E1C7007F6D9F /* WeatherMap.xcdatamodel */;
+			path = WeatherMap.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = BDEC0BC51FEA958D00E0DD95 /* Project object */;
 }
