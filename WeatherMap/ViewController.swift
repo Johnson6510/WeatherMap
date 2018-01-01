@@ -9,6 +9,7 @@
 //
 
 import UIKit
+import CoreData
 import MapKit
 import Alamofire
 
@@ -18,22 +19,27 @@ protocol HandleMapSearch {
 
 class ViewController: UIViewController, MKMapViewDelegate {
 
-    let locationManager = CLLocationManager()
+    let OpenWeatherAPIKey = "cc97bcab2f8e89e1d4a5af6e6029022f"
 
-    var resultSearchController:UISearchController? = nil
+    let locationManager = CLLocationManager()
+    var resultSearchController: UISearchController? = nil
+    var selectedPin: MKPlacemark! = nil
     
-    var selectedPin: MKPlacemark? = nil
-    
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    let entityName = "StoredPlace"
+    let entity = NSFetchRequest<NSFetchRequestResult>(entityName: "StoredPlace")
+
     @IBOutlet weak var mapView: MKMapView!
     
     @IBAction func LongPress(_ sender: UILongPressGestureRecognizer) {
         handleLongPress(gestureRecognizer: sender)
     }
     
-    let OpenWeatherAPIKey = "cc97bcab2f8e89e1d4a5af6e6029022f"
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        entity.returnsObjectsAsFaults = false
+
         // Do any additional setup after loading the view, typically from a nib.
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -43,21 +49,17 @@ class ViewController: UIViewController, MKMapViewDelegate {
         let locationSearchTable = storyboard!.instantiateViewController(withIdentifier: "LocationSearchTable") as! LocationSearchTable
         resultSearchController = UISearchController(searchResultsController: locationSearchTable)
         resultSearchController?.searchResultsUpdater = locationSearchTable as UISearchResultsUpdating
-        
         let searchBar = resultSearchController!.searchBar
         searchBar.sizeToFit()
         searchBar.placeholder = "Search for places"
-        //navigationItem.titleView = resultSearchController?.searchBar
         navigationItem.searchController = resultSearchController
-        
-
         resultSearchController?.hidesNavigationBarDuringPresentation = false
         resultSearchController?.dimsBackgroundDuringPresentation = true
         definesPresentationContext = true
-        
         locationSearchTable.mapView = mapView
-        
         locationSearchTable.handleMapSearchDelegate = self
+
+        loadSavedPOI()
     }
 
     override func didReceiveMemoryWarning() {
@@ -70,7 +72,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
             let touchPoint = gestureRecognizer.location(in: mapView)
             let newCoordinates = mapView.convert(touchPoint, toCoordinateFrom: mapView)
             
-            addAnnotationOnLocation(coordinates: newCoordinates)
+            addAnnotationOnLocationRecord(coordinates: newCoordinates)
         }
     }
     
@@ -98,7 +100,6 @@ class ViewController: UIViewController, MKMapViewDelegate {
                     return
                 }
                 //print(JSON)
-                
                 annotation.title = "\(JSON["name"]!), \(JSON["sys"]!["country"]! ?? "")"
                 annotation.subtitle = "\(JSON["main"]!["temp"]! ?? 0)(\(JSON["main"]!["temp_min"]! ?? 0)~\(JSON["main"]!["temp_max"]! ?? 0)) ℃"
 
@@ -114,6 +115,47 @@ class ViewController: UIViewController, MKMapViewDelegate {
         }
     }
 
+    func addAnnotationOnLocationRecord(coordinates: CLLocationCoordinate2D) {
+        self.mapView.delegate = self
+        
+        let annotation = CustomPointAnnotation()
+        annotation.coordinate = coordinates
+        annotation.title = "Loading…"
+        annotation.subtitle = "Loading…"
+        //https://openweathermap.org/weather-conditions
+        annotation.imageName = "50d.png"
+        
+        let url = "http://api.openweathermap.org/data/2.5/weather?lat=\(coordinates.latitude)&lon=\(coordinates.longitude)&APIKEY=\(OpenWeatherAPIKey)&units=metric"
+        
+        Alamofire.request(url).responseJSON { response in
+            DispatchQueue.main.async {
+                guard response.result.isSuccess else {
+                    let errorMessage = response.result.error?.localizedDescription
+                    print(errorMessage!)
+                    return
+                }
+                guard let JSON = response.result.value as? Dictionary<String, AnyObject> else {
+                    print("JSON formate error")
+                    return
+                }
+                //print(JSON)
+                annotation.title = "\(JSON["name"]!), \(JSON["sys"]!["country"]! ?? "")"
+                annotation.subtitle = "\(JSON["main"]!["temp"]! ?? 0)(\(JSON["main"]!["temp_min"]! ?? 0)~\(JSON["main"]!["temp_max"]! ?? 0)) ℃"
+                
+                if let weather = JSON["weather"] as? [[String: AnyObject]] {
+                    annotation.imageName = weather[0]["icon"] as! String + ".png"
+                    annotation.subtitle! += ", \(weather[0]["description"] ?? "Unknow" as AnyObject)"
+                    //print (annotation.imageName)
+                    self.mapView.addAnnotation(annotation)
+                }
+                
+                self.mapView.selectAnnotation(annotation, animated: true)
+                self.insert(latitude: coordinates.latitude, longitude: coordinates.longitude, titleString: annotation.title!, subTitleString: "", typeString: "Weather")
+
+            }
+        }
+    }
+
     class CustomPointAnnotation: MKPointAnnotation {
         var imageName: String!
     }
@@ -124,6 +166,50 @@ class ViewController: UIViewController, MKMapViewDelegate {
             let mapItem = MKMapItem(placemark: selectedPin)
             let launchOptions = [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeDriving]
             mapItem.openInMaps(launchOptions: launchOptions)
+        }
+    }
+    
+    func insert(latitude: Double, longitude: Double, titleString: String, subTitleString: String, typeString: String) {
+        let entity = NSEntityDescription.entity(forEntityName: entityName, in: context)
+        let newPOI = NSManagedObject(entity: entity!, insertInto: context)
+        
+        newPOI.setValue(String(latitude), forKey: "latitude")
+        newPOI.setValue(String(longitude), forKey: "longitude")
+        newPOI.setValue(titleString, forKey: "title")
+        newPOI.setValue(subTitleString, forKey: "subTitle")
+        newPOI.setValue(typeString, forKey: "poiType")
+
+        do {
+            try context.save()
+        } catch {
+            fatalError("Failure to save context: \(error)")
+        }
+    }
+    
+    func loadSavedPOI() {
+        do {
+            let results = try context.fetch(entity)
+            let totalEntries = results.count
+            print ("Total Location to Load: \(totalEntries)")
+            if totalEntries != 0 {
+                for row in 0 ... (totalEntries - 1) {
+                    let thisPlace: StoredPlace = results[row] as! StoredPlace
+                    let latitude = Double(thisPlace.latitude!)
+                    let longitude = Double(thisPlace.longitude!)
+                    let myLocation = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
+
+                    if (thisPlace.poiType == "Weather") {
+                        _ = addAnnotationOnLocation(coordinates: myLocation)
+                    } else if (thisPlace.poiType == "POI") {
+                        let myPlace = MKPlacemark(coordinate: myLocation)
+                        dropPin(placemark: myPlace, title: thisPlace.title!, subTitle: thisPlace.subTitle!)
+                    } else {
+                        print("LoadLocation Error!!")
+                    }
+                }
+            }
+        } catch {
+            print("Failed")
         }
     }
 }
@@ -150,10 +236,10 @@ extension ViewController : CLLocationManagerDelegate {
 
 extension ViewController: HandleMapSearch {
     func dropPinZoomIn(placemark: MKPlacemark){
-        // cache the pin
+        //for getDirections
         selectedPin = placemark
         // clear existing pins
-        mapView.removeAnnotations(mapView.annotations)
+        //mapView.removeAnnotations(mapView.annotations)
         let annotation = MKPointAnnotation()
         annotation.coordinate = placemark.coordinate
         annotation.title = placemark.name
@@ -162,6 +248,27 @@ extension ViewController: HandleMapSearch {
             annotation.subtitle = "\(city) \(state)"
         }
         mapView.addAnnotation(annotation)
+        mapView.selectAnnotation(annotation, animated: true)
+        
+        let span = MKCoordinateSpanMake(0.05, 0.05)
+        let region = MKCoordinateRegionMake(placemark.coordinate, span)
+        mapView.setRegion(region, animated: true)
+        
+        insert(latitude: placemark.coordinate.latitude, longitude: placemark.coordinate.longitude, titleString: annotation.title!, subTitleString: annotation.subtitle!, typeString: "POI")
+    }
+    
+    func dropPin(placemark: MKPlacemark, title: String, subTitle: String) {
+        //for getDirections
+        selectedPin = placemark
+        // clear existing pins
+        //mapView.removeAnnotations(mapView.annotations)
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = placemark.coordinate
+        annotation.title = title
+        annotation.subtitle = subTitle
+        mapView.addAnnotation(annotation)
+        mapView.selectAnnotation(annotation, animated: true)
+
         let span = MKCoordinateSpanMake(0.05, 0.05)
         let region = MKCoordinateRegionMake(placemark.coordinate, span)
         mapView.setRegion(region, animated: true)
@@ -173,32 +280,36 @@ extension ViewController {
         if annotation is MKUserLocation {
             //return nil so map view draws "blue dot" for standard user location
             return nil
-        } else if (annotation is CustomPointAnnotation) {
+       } else if annotation is CustomPointAnnotation {
             let reuseId = "test"
-            var anView = MapView.dequeueReusableAnnotationView(withIdentifier: reuseId)
+            var anView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId)
             if anView == nil {
                 anView = MKAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-                anView?.canShowCallout = true
+                anView!.canShowCallout = true
             } else {
-                anView?.annotation = annotation
+                anView!.annotation = annotation
             }
             let cpa = annotation as! CustomPointAnnotation
-            anView?.image = UIImage(named:cpa.imageName)
-            
+            anView!.image = UIImage(named: cpa.imageName)
             return anView
-        } else {
+        } else if annotation is MKPointAnnotation {
             let reuseId = "pin"
             var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
-            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-            pinView?.pinTintColor = UIColor.orange
-            pinView?.canShowCallout = true
-            let smallSquare = CGSize(width: 30, height: 30)
-            let button = UIButton(frame: CGRect(origin: CGPoint(x: 0,y :0), size: smallSquare))
-            button.setBackgroundImage(UIImage(named: "car"), for: .normal)
-            button.addTarget(self, action: #selector(ViewController.getDirections), for: .touchUpInside)
-            pinView?.leftCalloutAccessoryView = button
-
+            if pinView == nil {
+                pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+                pinView!.canShowCallout = true
+                
+                pinView!.pinTintColor = UIColor.orange
+                let button = UIButton(frame: CGRect(origin: CGPoint(x: 0,y :0), size: CGSize(width: 30, height: 30)))
+                button.setBackgroundImage(UIImage(named: "car"), for: .normal)
+                button.addTarget(self, action: #selector(ViewController.getDirections), for: .touchUpInside)
+                pinView!.leftCalloutAccessoryView = button
+            } else {
+                pinView!.annotation = annotation
+            }
             return pinView
+       } else {
+            return nil
         }
     }
 }

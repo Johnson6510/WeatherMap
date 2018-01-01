@@ -35,20 +35,34 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZOs-u0-Neg">
-                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="559"/>
                                 <gestureRecognizers/>
                                 <connections>
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="PoK-kf-hbl"/>
                                     <outletCollection property="gestureRecognizers" destination="8Wb-xI-dTP" appends="YES" id="vDL-cH-CAU"/>
                                 </connections>
                             </mapView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vY8-eI-mXJ">
+                                <rect key="frame" x="0.0" y="623" width="375" height="44"/>
+                                <items>
+                                    <barButtonItem title="POI管理" id="Stz-Yd-vBq">
+                                        <connections>
+                                            <segue destination="sbv-Dg-qKa" kind="show" id="JQm-5K-FbP"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </items>
+                            </toolbar>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="ZOs-u0-Neg" secondAttribute="bottom" id="61J-oh-hjQ"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="ZOs-u0-Neg" secondAttribute="trailing" id="7Mq-LJ-MAu"/>
-                            <constraint firstItem="ZOs-u0-Neg" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="Sr9-Or-KhK"/>
-                            <constraint firstItem="ZOs-u0-Neg" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="qEB-yS-C44"/>
+                            <constraint firstItem="ZOs-u0-Neg" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="2Ow-Gp-XC1"/>
+                            <constraint firstItem="ZOs-u0-Neg" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="Mce-pa-LoN"/>
+                            <constraint firstItem="vY8-eI-mXJ" firstAttribute="top" secondItem="ZOs-u0-Neg" secondAttribute="bottom" id="NUQ-Ht-NF8"/>
+                            <constraint firstItem="vY8-eI-mXJ" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="OWd-5z-oBi"/>
+                            <constraint firstItem="vY8-eI-mXJ" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="VkN-B6-Xyh"/>
+                            <constraint firstAttribute="bottom" secondItem="ZOs-u0-Neg" secondAttribute="bottom" constant="44" id="bk1-P6-ji6"/>
+                            <constraint firstItem="vY8-eI-mXJ" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="f7f-5X-eF2"/>
+                            <constraint firstItem="ZOs-u0-Neg" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="qUe-bx-212"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
@@ -60,11 +74,62 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
                 <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="8Wb-xI-dTP">
                     <connections>
-                        <action selector="LongPress:" destination="BYZ-38-t0r" id="zi7-zB-Y4t"/>
+                        <action selector="LongPress:" destination="BYZ-38-t0r" id="Ga9-oP-PCI"/>
+                        <outlet property="delegate" destination="ZOs-u0-Neg" id="jBd-nk-Ph1"/>
                     </connections>
                 </pongPressGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="127" y="123"/>
+            <point key="canvasLocation" x="125.59999999999999" y="122.78860569715144"/>
+        </scene>
+        <!--POI管理-->
+        <scene sceneID="jcI-6w-zfX">
+            <objects>
+                <tableViewController id="sbv-Dg-qKa" customClass="PoiManager" customModule="WeatherMap" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="hJU-fI-q0r">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="cell" textLabel="LvD-PV-C6s" detailTextLabel="JHv-jB-T9J" style="IBUITableViewCellStyleSubtitle" id="ocP-Ds-hJd">
+                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ocP-Ds-hJd" id="i15-of-nhH">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LvD-PV-C6s">
+                                            <rect key="frame" x="16" y="5" width="33.5" height="20.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="JHv-jB-T9J">
+                                            <rect key="frame" x="16" y="25.5" width="44" height="14.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="sbv-Dg-qKa" id="dsR-TE-ZGt"/>
+                            <outlet property="delegate" destination="sbv-Dg-qKa" id="cri-Ba-ZgP"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="POI管理" id="gDJ-TC-Q6u">
+                        <barButtonItem key="backBarButtonItem" title="返回" id="M4g-8T-roK"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="tblLog" destination="hJU-fI-q0r" id="zhq-oM-tEp"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FPQ-gE-J7a" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="126" y="914"/>
         </scene>
         <!--Location Search Table-->
         <scene sceneID="iNS-Z9-Q74">
