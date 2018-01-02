@@ -28,7 +28,14 @@ class ViewController: UIViewController, MKMapViewDelegate {
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     let entityName = "StoredPlace"
     let entity = NSFetchRequest<NSFetchRequestResult>(entityName: "StoredPlace")
+    
+    @IBAction func returnHome(_ sender: Any) {
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.requestLocation()
+        }
+    }
 
+    
     @IBOutlet weak var mapView: MKMapView!
     
     @IBAction func LongPress(_ sender: UILongPressGestureRecognizer) {
@@ -58,9 +65,24 @@ class ViewController: UIViewController, MKMapViewDelegate {
         definesPresentationContext = true
         locationSearchTable.mapView = mapView
         locationSearchTable.handleMapSearchDelegate = self
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
+        // clear existing pins
+        mapView.removeAnnotations(mapView.annotations)
+
+        mapView.showsUserLocation = true;
+
+        //load all POIs from Core Data
         loadSavedPOI()
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        mapView.showsUserLocation = false
+    }
+
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -231,7 +253,7 @@ extension ViewController : CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("error:: \(error)")
-    }
+    }    
 }
 
 extension ViewController: HandleMapSearch {
@@ -272,7 +294,7 @@ extension ViewController: HandleMapSearch {
         let span = MKCoordinateSpanMake(0.05, 0.05)
         let region = MKCoordinateRegionMake(placemark.coordinate, span)
         mapView.setRegion(region, animated: true)
-    }
+    }    
 }
 
 extension ViewController {

@@ -50,6 +50,11 @@
                                             <segue destination="sbv-Dg-qKa" kind="show" id="JQm-5K-FbP"/>
                                         </connections>
                                     </barButtonItem>
+                                    <barButtonItem title="My Location" id="ABk-Nc-i2K">
+                                        <connections>
+                                            <action selector="returnHome:" destination="BYZ-38-t0r" id="Q9j-tK-Xlc"/>
+                                        </connections>
+                                    </barButtonItem>
                                 </items>
                             </toolbar>
                         </subviews>

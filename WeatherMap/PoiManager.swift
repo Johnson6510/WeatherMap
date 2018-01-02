@@ -15,7 +15,7 @@ class PoiManager: UITableViewController {
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     let entityName = "StoredPlace"
     let entity = NSFetchRequest<NSFetchRequestResult>(entityName: "StoredPlace")
-
+    
     @IBOutlet var tblLog: UITableView!
 
     override func viewDidLoad() {
@@ -95,7 +95,6 @@ class PoiManager: UITableViewController {
         tableView.deleteRows(at: [indexPath], with: .fade)
     }
     
-
     /*
     // Override to support rearranging the table view.
     override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
