@@ -28,10 +28,13 @@ class ViewController: UIViewController, MKMapViewDelegate {
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     let entityName = "StoredPlace"
     let entity = NSFetchRequest<NSFetchRequestResult>(entityName: "StoredPlace")
+    var myLocation = MKPointAnnotation()
     
     @IBAction func returnHome(_ sender: Any) {
         if CLLocationManager.locationServicesEnabled() {
-            locationManager.requestLocation()
+            let span = MKCoordinateSpanMake(0.05, 0.05)
+            let region = MKCoordinateRegion(center: myLocation.coordinate, span: span)
+            mapView.setRegion(region, animated: true)
         }
     }
 
@@ -244,11 +247,14 @@ extension ViewController : CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.first {
+        //if let location = locations.first {
+        if let location = locations.last {
+            myLocation.coordinate = location.coordinate
             let span = MKCoordinateSpanMake(0.05, 0.05)
             let region = MKCoordinateRegion(center: location.coordinate, span: span)
             mapView.setRegion(region, animated: true)
         }
+        print(locations)
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
