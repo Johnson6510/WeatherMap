@@ -29,6 +29,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
     let entityName = "StoredPlace"
     let entity = NSFetchRequest<NSFetchRequestResult>(entityName: "StoredPlace")
     var myLocation = MKPointAnnotation()
+    var selectedAnnotation = MKPointAnnotation()
     
     @IBAction func returnHome(_ sender: Any) {
         if CLLocationManager.locationServicesEnabled() {
@@ -176,7 +177,6 @@ class ViewController: UIViewController, MKMapViewDelegate {
                 
                 self.mapView.selectAnnotation(annotation, animated: true)
                 self.insert(latitude: coordinates.latitude, longitude: coordinates.longitude, titleString: annotation.title!, subTitleString: "", typeString: "Weather")
-
             }
         }
     }
@@ -185,15 +185,16 @@ class ViewController: UIViewController, MKMapViewDelegate {
         var imageName: String!
     }
 
-    
-    @objc func getDirections(){
+    @objc func getDirections() {
+        selectedPin = MKPlacemark(coordinate: selectedAnnotation.coordinate)
         if let selectedPin = selectedPin {
             let mapItem = MKMapItem(placemark: selectedPin)
+            print(mapItem.placemark.coordinate)
             let launchOptions = [MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeDriving]
             mapItem.openInMaps(launchOptions: launchOptions)
         }
     }
-    
+
     func insert(latitude: Double, longitude: Double, titleString: String, subTitleString: String, typeString: String) {
         let entity = NSEntityDescription.entity(forEntityName: entityName, in: context)
         let newPOI = NSManagedObject(entity: entity!, insertInto: context)
@@ -254,7 +255,7 @@ extension ViewController : CLLocationManagerDelegate {
             let region = MKCoordinateRegion(center: location.coordinate, span: span)
             mapView.setRegion(region, animated: true)
         }
-        print(locations)
+        //print(locations)
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -265,7 +266,7 @@ extension ViewController : CLLocationManagerDelegate {
 extension ViewController: HandleMapSearch {
     func dropPinZoomIn(placemark: MKPlacemark){
         //for getDirections
-        selectedPin = placemark
+        //selectedPin = placemark
         // clear existing pins
         //mapView.removeAnnotations(mapView.annotations)
         let annotation = MKPointAnnotation()
@@ -287,7 +288,7 @@ extension ViewController: HandleMapSearch {
     
     func dropPin(placemark: MKPlacemark, title: String, subTitle: String) {
         //for getDirections
-        selectedPin = placemark
+        //selectedPin = placemark
         // clear existing pins
         //mapView.removeAnnotations(mapView.annotations)
         let annotation = MKPointAnnotation()
@@ -304,6 +305,12 @@ extension ViewController: HandleMapSearch {
 }
 
 extension ViewController {
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        if view.annotation is MKPointAnnotation {
+            self.selectedAnnotation = (view.annotation as? MKPointAnnotation)!
+        }
+    }
+    
     func mapView(_ MapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if annotation is MKUserLocation {
             //return nil so map view draws "blue dot" for standard user location
@@ -327,6 +334,7 @@ extension ViewController {
                 pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
                 pinView!.canShowCallout = true
                 
+                //bug (getDirection can not get correct location
                 pinView!.pinTintColor = UIColor.orange
                 let button = UIButton(frame: CGRect(origin: CGPoint(x: 0,y :0), size: CGSize(width: 30, height: 30)))
                 button.setBackgroundImage(UIImage(named: "car"), for: .normal)

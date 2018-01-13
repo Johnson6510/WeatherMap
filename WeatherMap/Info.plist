@@ -6,6 +6,8 @@
 	<string></string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>zh_TW</string>
+	<key>CFBundleDocumentTypes</key>
+	<array/>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

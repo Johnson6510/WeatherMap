@@ -15,7 +15,6 @@
 		BDEC0BDB1FEA958D00E0DD95 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BDEC0BD91FEA958D00E0DD95 /* LaunchScreen.storyboard */; };
 		BDFD03EE1FF7E1C7007F6D9F /* WeatherMap.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BDFD03EC1FF7E1C7007F6D9F /* WeatherMap.xcdatamodeld */; };
 		BDFD03F01FF7ED38007F6D9F /* PoiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFD03EF1FF7ED38007F6D9F /* PoiManager.swift */; };
-		BDFD03F21FF9305C007F6D9F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDFD03F11FF9305C007F6D9F /* MapKit.framework */; };
 		BDFFAF501FECFCAD00E6B10F /* LocationSearchTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFFAF4F1FECFCAD00E6B10F /* LocationSearchTable.swift */; };
 /* End PBXBuildFile section */
 
@@ -33,7 +32,6 @@
 		BDEC0BE21FEA999F00E0DD95 /* Pods */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Pods; sourceTree = "<group>"; };
 		BDFD03ED1FF7E1C7007F6D9F /* WeatherMap.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = WeatherMap.xcdatamodel; sourceTree = "<group>"; };
 		BDFD03EF1FF7ED38007F6D9F /* PoiManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoiManager.swift; sourceTree = "<group>"; };
-		BDFD03F11FF9305C007F6D9F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		BDFFAF4F1FECFCAD00E6B10F /* LocationSearchTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationSearchTable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -42,7 +40,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BDFD03F21FF9305C007F6D9F /* MapKit.framework in Frameworks */,
 				2E35F8547B763798E526F611 /* Pods_WeatherMap.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -53,7 +50,6 @@
 		41304A301999092CB96D689A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BDFD03F11FF9305C007F6D9F /* MapKit.framework */,
 				BDEC0BE21FEA999F00E0DD95 /* Pods */,
 				2826A62A9FE13229A5D30554 /* Pods_WeatherMap.framework */,
 			);
@@ -144,7 +140,7 @@
 								enabled = 0;
 							};
 							com.apple.Maps.iOS = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
