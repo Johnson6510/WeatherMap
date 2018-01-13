@@ -60,7 +60,11 @@
                                             <action selector="showPM2d5:" destination="BYZ-38-t0r" id="pqC-Nt-hkg"/>
                                         </connections>
                                     </barButtonItem>
-                                    <barButtonItem title="紫外線" id="ovI-rp-WNH"/>
+                                    <barButtonItem title="紫外線" id="ovI-rp-WNH">
+                                        <connections>
+                                            <action selector="showUV:" destination="BYZ-38-t0r" id="2Jh-XB-b2T"/>
+                                        </connections>
+                                    </barButtonItem>
                                 </items>
                             </toolbar>
                         </subviews>

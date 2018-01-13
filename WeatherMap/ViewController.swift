@@ -18,8 +18,8 @@ protocol HandleMapSearch {
 }
 
 class ViewController: UIViewController, MKMapViewDelegate {
-    let urlTwUv = "http://opendata2.epa.gov.tw/UV/UV.json"
     var isPm2d5: Bool = false
+    var isUV: Bool = false
 
     let OpenWeatherAPIKey = "cc97bcab2f8e89e1d4a5af6e6029022f"
 
@@ -33,7 +33,8 @@ class ViewController: UIViewController, MKMapViewDelegate {
     var myLocation = MKPointAnnotation()
     var selectedAnnotation = MKPointAnnotation()
     var pm2d5Annotations = [CustomPointAnnotation()]
-    
+    var uviAnnotations = [CustomPointAnnotation()]
+
     @IBAction func returnHome(_ sender: Any) {
         if CLLocationManager.locationServicesEnabled() {
             let span = MKCoordinateSpanMake(0.05, 0.05)
@@ -169,7 +170,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
         annotation.coordinate = coordinates
         annotation.title = title
         annotation.subtitle = subtitle
-        annotation.imageName = "air5"
+        annotation.imageName = "air0"
         if let pm25 = Int(subtitle) {
             switch pm25 {
             case 0...11:
@@ -190,14 +191,95 @@ class ViewController: UIViewController, MKMapViewDelegate {
                 annotation.imageName = "air4"
             case 65...70:
                 annotation.imageName = "air5"
-            case 71...999:
+            case 71...99:
                 annotation.imageName = "air5"
+            case 100...999:
+                annotation.imageName = "air6"
             default:
-                annotation.imageName = "air5"
+                annotation.imageName = "air0"
             }
         }
         self.mapView.addAnnotation(annotation)
         pm2d5Annotations.append(annotation)
+    }
+    
+    @IBAction func showUV(_ sender: UIBarButtonItem) {
+        isUV = !isUV
+        if isUV {
+            //create annotations
+            let parameters: Parameters = ["foo": "bar"]
+            let urlTwUv = "http://opendata2.epa.gov.tw/UV/UV.json"
+            Alamofire.request(urlTwUv, parameters: parameters).responseJSON { response in
+                DispatchQueue.main.async {
+                    guard response.result.isSuccess else {
+                        let errorMessage = response.result.error?.localizedDescription
+                        print(errorMessage!)
+                        return
+                    }
+                    guard let JSON = response.result.value as? Array<Dictionary<String,String>> else {
+                        print("JSON formate error")
+                        return
+                    }
+                    //print(JSON)
+                    for key in 0..<JSON.count {
+                        if let site = JSON[key]["SiteName"] {
+                            let country = JSON[key]["County"]
+                            let uvi = JSON[key]["UVI"]
+                            var coordinates = CLLocationCoordinate2D()
+                            //x度 y分 z秒 = x + y/60 + z/3600 度
+                            //25,09,52.20
+                            coordinates.longitude = self.dmsToLocation(json: JSON[key]["WGS84Lon"]!)
+                            coordinates.latitude = self.dmsToLocation(json: JSON[key]["WGS84Lat"]!)
+                            //print(coordinates.longitude)
+                            //print(coordinates.latitude)
+                            self.addUviAnnotation(coordinates: coordinates, title: country! + ", " + site, subtitle: uvi!)
+                        }
+                    }
+                }
+            }
+        } else {
+            //remove annotations
+            for annotation in uviAnnotations {
+                self.mapView.removeAnnotation(annotation)
+            }
+        }
+    }
+    
+    func dmsToLocation(json: String) -> Double {
+        //x度 y分 z秒 = x + y/60 + z/3600 度
+        //25,09,52.20
+        let locationArr: [String] = json.components(separatedBy: ",")
+        let deg: Double = Double(locationArr[0]) ?? 0.0
+        let min: Double = Double(locationArr[1]) ?? 0.0
+        let sec: Double = Double(locationArr[2]) ?? 0.0
+        
+        return deg + min/60 + sec/3600
+    }
+    
+    func addUviAnnotation(coordinates: CLLocationCoordinate2D, title: String, subtitle: String) {
+        let annotation = CustomPointAnnotation()
+        annotation.coordinate = coordinates
+        annotation.title = title
+        annotation.subtitle = subtitle
+        annotation.imageName = "v1"
+        if let uvi = Int(subtitle) {
+            switch uvi {
+            case 0...2:
+                annotation.imageName = "v1"
+            case 3...5:
+                annotation.imageName = "v2"
+            case 6...7:
+                annotation.imageName = "v3"
+            case 8...10:
+                annotation.imageName = "v4"
+            case 11...999:
+                annotation.imageName = "v5"
+            default:
+                annotation.imageName = "v5"
+            }
+        }
+        self.mapView.addAnnotation(annotation)
+        uviAnnotations.append(annotation)
     }
     
     @IBOutlet weak var mapView: MKMapView!
@@ -206,7 +288,6 @@ class ViewController: UIViewController, MKMapViewDelegate {
         handleLongPress(gestureRecognizer: sender)
     }
     
-
     override func viewDidLoad() {
         super.viewDidLoad()
         entity.returnsObjectsAsFaults = false
