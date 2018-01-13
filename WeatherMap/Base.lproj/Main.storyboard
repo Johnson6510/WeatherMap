@@ -55,6 +55,12 @@
                                             <action selector="returnHome:" destination="BYZ-38-t0r" id="Q9j-tK-Xlc"/>
                                         </connections>
                                     </barButtonItem>
+                                    <barButtonItem title="PM2.5" id="JXv-43-iie">
+                                        <connections>
+                                            <action selector="showPM2d5:" destination="BYZ-38-t0r" id="pqC-Nt-hkg"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem title="紫外線" id="ovI-rp-WNH"/>
                                 </items>
                             </toolbar>
                         </subviews>
